@@ -37,8 +37,7 @@ The default dock includes:
 
 - Firefox
 - Spark App Store
-- QQ
-- WeChat
+
 
 ## Development Environment
 
@@ -50,7 +49,6 @@ Common development tools are preinstalled:
 - Java
 - Rust
 - Go
-- Node.js
 - Jupyter
 
 ## Requirements
