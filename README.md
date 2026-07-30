@@ -2,9 +2,9 @@
 
 [English](README_EN.md) | 简体中文
 
-## 项目介绍
-
 doroUbuntu 是安卓离线 Ubuntu 桌面环境，集成 Ubuntu 24.04、XFCE、Termux:X11 与 PulseAudio。
+
+![doroUbuntu XFCE 桌面](assets/screenshots/03-deploying.jpg)
 
 ## 当前版本
 
@@ -27,8 +27,6 @@ doroUbuntu 是安卓离线 Ubuntu 桌面环境，集成 Ubuntu 24.04、XFCE、Te
 
 桌面壳使用软件渲染。应用入口通过 `/usr/local/bin/doro-gpu-run` 使用 Zink。Turnip 与 Mesa 保持不变，不全局强制 Zink，避免桌面黑屏。
 
-验证命令：
-
 ```bash
 doro-gpu-run glxinfo -B
 ```
@@ -46,39 +44,31 @@ doro-gpu-run glxinfo -B
 - GIMP
 - Thunar
 
-## 界面预览
+## 部署流程
 
-### 1. 应用首页
+**应用首页**
 
-![应用首页](assets/screenshots/01-home.jpg)
+![应用首页](assets/screenshots/08-gpu.jpg)
 
-### 2. 获取文件权限
+**获取文件权限**
 
-![获取文件权限](assets/screenshots/02-permission.jpg)
+![获取文件权限](assets/screenshots/06-terminal.jpg)
 
-### 3. 创建 Linux 用户
+**创建 Linux 用户**
 
 ![创建 Linux 用户](assets/screenshots/04-user.jpg)
 
-### 4. 正在部署系统
+**正在部署系统**
 
-![正在部署系统](assets/screenshots/03-deploying.jpg)
+![正在部署系统](assets/screenshots/07-desktop.jpg)
 
-### 5. Ubuntu 部署完成
+**Ubuntu 部署完成**
 
 ![Ubuntu 部署完成](assets/screenshots/05-finished.jpg)
 
-### 6. 内置终端与系统信息
+**内置终端与系统信息**
 
-![内置终端与系统信息](assets/screenshots/06-terminal.jpg)
-
-### 7. XFCE 桌面与 Zink GPU 验证
-
-![XFCE 桌面与 Zink GPU 验证](assets/screenshots/07-desktop.jpg)
-
-### 8. Turnip 与 Zink 命令验证
-
-![Turnip 与 Zink 命令验证](assets/screenshots/08-gpu.jpg)
+![内置终端与系统信息](assets/screenshots/02-permission.jpg)
 
 ## 安装方法
 
@@ -96,12 +86,9 @@ doro-gpu-run glxinfo -B
 
 Firefox 保持软件视频解码。本版本不含实验性 MediaCodec 硬解桥。
 
-## 目录内容
+## 下载与校验
 
-- APK：安装包
-- `SHA256SUMS.txt`：校验值
-- `RELEASE_1.1.9Debug_ZH.md`：中文说明
-- `RELEASE_1.1.9Debug_EN.md`：英文说明
+APK 请从 GitHub Releases 下载。校验值见 `SHA256SUMS.txt`。
 
 ## 许可证
 
