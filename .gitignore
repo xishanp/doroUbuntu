@@ -1,13 +1,32 @@
 *.iml
-.gradle/
-local.properties
-.idea/
+.gradle
+/local.properties
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
 .DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+
+# Local assistant data
+/.backup/
+/.operit/
+
+# Build outputs and packages
 **/build/
 **/.gradle/
 **/.cxx/
-.externalNativeBuild/
 *.apk
 *.aab
-.backup/
-.operit/
+
+# Offline archives are published separately; GitHub LFS quota is insufficient
+/app/src/main/assets/offline/factory-apps-arm64.tar
+/app/src/main/assets/offline/vendor-apps-arm64.tar
+/app/src/main/assets/offline/core-dev-arm64.tar
+/app/src/main/assets/rootfs/ubuntu-base-24.04.4-base-arm64.tar

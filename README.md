@@ -9,8 +9,8 @@ doroUbuntu 是安卓离线 Ubuntu 桌面环境，集成 Ubuntu 24.04、XFCE、Te
 ## 当前版本
 
 - 版本：`1.1.9Debug`
+- APK：`doroUbuntu-1.1.9Debug.apk`
 - 状态：已完成全新安装验收
-- 架构：ARM64
 
 ## 主要特性
 
@@ -27,6 +27,8 @@ doroUbuntu 是安卓离线 Ubuntu 桌面环境，集成 Ubuntu 24.04、XFCE、Te
 
 桌面壳使用软件渲染。应用入口通过 `/usr/local/bin/doro-gpu-run` 使用 Zink。Turnip 与 Mesa 保持不变，不全局强制 Zink，避免桌面黑屏。
 
+验证命令：
+
 ```bash
 doro-gpu-run glxinfo -B
 ```
@@ -35,12 +37,33 @@ doro-gpu-run glxinfo -B
 
 ## 桌面入口
 
-Firefox、星火应用商店、VLC、LibreOffice、GIMP 与 Thunar 支持入口恢复，并使用 GPU 包装器启动。
+以下六个入口支持缺失 `Exec` 自动恢复，并使用 GPU 包装器：
 
-## 安装说明
+- Firefox
+- 星火应用商店
+- VLC
+- LibreOffice
+- GIMP
+- Thunar
+## 界面预览
+
+### 离线部署流程
+
+| 首页 | 文件授权 | 系统部署 | 创建用户 | 部署完成 |
+|---|---|---|---|---|
+| ![首页](assets/screenshots/01-home.jpg) | ![授权](assets/screenshots/02-permission.jpg) | ![部署](assets/screenshots/03-deploying.jpg) | ![用户](assets/screenshots/04-user.jpg) | ![完成](assets/screenshots/05-finished.jpg) |
+
+### Ubuntu运行效果
+
+| 内置终端 | XFCE桌面 | Turnip与Zink |
+|---|---|---|
+| ![终端](assets/screenshots/06-terminal.jpg) | ![桌面](assets/screenshots/07-desktop.jpg) | ![GPU](assets/screenshots/08-gpu.jpg) |
+
+## 安装方法
+
 
 1. 至少预留 10 GB 空间。
-2. 安装发布页提供的 APK。
+2. 安装目录内的 APK。
 3. 打开应用并启动初始化。
 4. 等待离线任务全部完成。
 5. 按提示进入 XFCE 桌面。
@@ -49,12 +72,18 @@ Firefox、星火应用商店、VLC、LibreOffice、GIMP 与 Thunar 支持入口�
 
 ## 兼容性与限制
 
-当前已验证 Qualcomm Adreno 740。其他 GPU 和系统尚未完整验证。Firefox 保持软件视频解码，本版本不含实验性 MediaCodec 硬解桥。
+当前已验证 Qualcomm Adreno 740。其他 GPU 和系统尚未完整验证。
 
-## 项目截图
+Firefox 保持软件视频解码。本版本不含实验性 MediaCodec 硬解桥。
 
-部署流程、终端、XFCE 桌面和 GPU 验证截图将保存在 `assets/screenshots/`。
+## 目录内容
+
+- APK：安装包
+- `SHA256SUMS.txt`：校验值
+- `RELEASE_1.1.9Debug_ZH.md`：中文说明
+- `RELEASE_1.1.9Debug_EN.md`：英文说明
+- `source/`：项目源码
 
 ## 许可证
 
-许可证信息整理中。使用和再分发前，请遵守代码、主题、图标、驱动及预装软件的各自授权条款。
+发布前请确认代码、主题、图标、驱动和预装软件的授权条款。

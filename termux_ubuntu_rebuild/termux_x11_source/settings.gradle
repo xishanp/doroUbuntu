@@ -1,0 +1,4 @@
+include ':shell-loader:stub'
+include ':shell-loader'
+include ':lorie'
+include ':lorie-app'

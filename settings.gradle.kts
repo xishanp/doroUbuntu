@@ -1,13 +1,42 @@
 pluginManagement {
-    repositories { google(); mavenCentral(); gradlePluginPortal() }
+    repositories {
+        maven("https://maven.aliyun.com/repository/gradle-plugin")
+        maven("https://maven.aliyun.com/repository/google")
+        maven("https://maven.aliyun.com/repository/public")
+        maven("https://repo.huaweicloud.com/repository/gradle-plugin/")
+        maven("https://repo.huaweicloud.com/repository/maven/")
+        google {
+            content {
+                includeGroupByRegex("com\\.android.*")
+                includeGroupByRegex("com\\.google.*")
+                includeGroupByRegex("androidx.*")
+            }
+        }
+        mavenCentral()
+        gradlePluginPortal()
+    }
 }
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-    repositories { google(); mavenCentral(); maven("https://jitpack.io") }
+    repositories {
+        maven("https://maven.aliyun.com/repository/google")
+        maven("https://maven.aliyun.com/repository/central")
+        maven("https://maven.aliyun.com/repository/public")
+        maven("https://repo.huaweicloud.com/repository/maven/")
+        maven("https://jitpack.io")
+        google()
+        mavenCentral()
+    }
 }
-rootProject.name = "doroUbuntu"
-include(":app", ":terminal-emulator", ":terminal-view", ":x11-lorie", ":x11-stub")
+
+rootProject.name = "My Application"
+include(":app")
+include(":terminal-emulator")
+include(":terminal-view")
+include(":x11-lorie")
+include(":x11-stub")
 project(":terminal-emulator").projectDir = file("termux_ubuntu_rebuild/integrated_app/terminal-emulator")
 project(":terminal-view").projectDir = file("termux_ubuntu_rebuild/integrated_app/terminal-view")
 project(":x11-lorie").projectDir = file("termux_ubuntu_rebuild/termux_x11_source/lorie")
 project(":x11-stub").projectDir = file("termux_ubuntu_rebuild/termux_x11_source/shell-loader/stub")
+ 

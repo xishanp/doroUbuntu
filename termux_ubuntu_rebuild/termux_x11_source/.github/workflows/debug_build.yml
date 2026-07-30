@@ -1,0 +1,123 @@
+name: Build
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+    paths-ignore:
+      - '**.md'
+      - 'img/**'
+  pull_request:
+    branches:
+      - master
+    paths-ignore:
+      - '**.md'
+      - 'img/**'
+
+permissions:
+  contents: write
+  
+jobs:
+  build:
+    name: "Build"
+    runs-on: ubuntu-latest
+    steps:
+    - name: Clone repository
+      uses: actions/checkout@v7
+      with:
+        submodules: false
+        fetch-depth: 1
+    - name: Checkout termux-app
+      uses: actions/checkout@v7
+      with:
+        repository: termux/termux-app
+        ref: v0.118.3
+        path: termux-app
+        fetch-depth: 1
+    - name: Validation
+      uses: gradle/actions/wrapper-validation@v6
+
+    - name: Java setup
+      uses: actions/setup-java@v5
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
+    - name: Restore cache
+      uses: actions/cache@v6
+      with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            .git/modules
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '.gitmodules') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+    - name: Fetch submodules
+      run: git submodule update --init --recursive --jobs 8 --depth 1
+
+    - name: Build
+      run: ./gradlew assembleDebug
+    - name: Build companion package
+      run: ./build_termux_package
+    - name: Store app-debug
+      uses: actions/upload-artifact@v7
+      with:
+        name: termux-x11-debug
+        path: ./lorie-app/build/outputs/apk/debug/lorie-app-debug.apk
+
+    - name: Store companion package
+      uses: actions/upload-artifact@v7
+      with:
+        name: termux-companion packages
+        path: |
+          ./lorie-app/build/outputs/apk/debug/termux-x11-*-all.deb
+          ./lorie-app/build/outputs/apk/debug/termux-x11-*-any.pkg.tar.xz
+        
+    - name: Store unstripped libraries with debug symbols
+      uses: actions/upload-artifact@v7
+      with:
+        name: termux-x11-unstripped-libraries-for-ndk-stack
+        path: ./lorie/build/intermediates/cxx/Debug/*
+
+    - name: Apply termux-app integration patch
+      working-directory: termux-app
+      run: |
+        git apply ../.github/termux-app-integration/agp-upgrade.patch
+        git apply ../.github/termux-app-integration/termux-app.patch
+        mkdir -p .integration-placeholders/shell-loader-parent
+        cp -r ../gradle/wrapper/. gradle/wrapper/
+        cp ../gradlew gradlew
+        cp ../gradlew.bat gradlew.bat
+        chmod +x gradlew
+
+    - name: Build termux-app with :lorie integrated
+      working-directory: termux-app
+      run: ./gradlew :app:assembleDebug
+
+    - name: Store termux-app+termux-x11 integrated debug APK
+      uses: actions/upload-artifact@v7
+      with:
+        name: termux-app-x11-integrated-debug
+        path: termux-app/app/build/outputs/apk/debug/termux-app_debug_universal.apk
+
+    - name: Update Nightly Release
+      uses: andelf/nightly-release@main
+      if: github.repository == 'termux/termux-x11' && github.ref == 'refs/heads/master'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: nightly
+        name: 'Nightly Release $$'
+        draft: false
+        prerelease: false
+        body: |
+          This is a nightly release of the termux-x11 app.
+          Based on ${{ github.sha }}
+        files: |
+          ./lorie-app/build/outputs/apk/debug/lorie-app-debug.apk
+          ./lorie-app/build/outputs/apk/debug/termux-x11-*-all.deb
+          ./lorie-app/build/outputs/apk/debug/termux-x11-*-any.pkg.tar.xz
+          ./termux-app/app/build/outputs/apk/debug/termux-app_debug_universal.apk

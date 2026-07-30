@@ -1,0 +1,193 @@
+# vim: set expandtab shiftwidth=2 tabstop=8 textwidth=0 filetype=yaml:
+#
+# This CI uses the freedesktop.org ci-templates.
+# Please see the ci-templates documentation for details:
+# https://freedesktop.pages.freedesktop.org/ci-templates/
+
+.templates_sha: &template_sha 34f4ade99434043f88e164933f570301fd18b125 # see https://docs.gitlab.com/ee/ci/yaml/#includefile
+
+
+include:
+  # Arch container builder template
+  - project: 'freedesktop/ci-templates'
+    ref: *template_sha
+    file: '/templates/arch.yml'
+  - project: 'freedesktop/ci-templates'
+    ref: *template_sha
+    file: '/templates/ci-fairy.yml'
+  - template: Security/SAST.gitlab-ci.yml
+
+
+# global variables to be used by most/all jobs.
+variables:
+  FDO_UPSTREAM_REPO: 'xorg/app/xkbcomp'
+  # Changing the tag will rebuild the container images. The value is just a
+  # string, but we use the date for human benefits.
+  FDO_DISTRIBUTION_TAG: '2025-03-09.1'
+  # minimal set of packages required to build and install
+  BASE_PACKAGES: 'bison clang gcc libxkbfile libx11 pkgconf'
+  AUTOTOOLS_PACKAGES: 'autoconf automake libtool make xorg-util-macros'
+  MESON_PACKAGES: 'meson ninja'
+  # extra packages we need for various tests
+  EXTRA_PACKAGES: 'diffoscope diffutils findutils jq'
+  FDO_DISTRIBUTION_PACKAGES: $BASE_PACKAGES $AUTOTOOLS_PACKAGES $MESON_PACKAGES $EXTRA_PACKAGES
+  CONFIGURE_OPTIONS: '--disable-silent-rules'
+
+
+stages:
+  - prep
+  - build
+  - test
+  - deploy
+
+
+#
+# Verify that commit messages are as expected
+#
+check-commits:
+  extends:
+    - .fdo.ci-fairy
+  stage: prep
+  script:
+    - ci-fairy check-commits --junit-xml=results.xml
+  except:
+    - master@xorg/app/xkbcomp
+  variables:
+    GIT_DEPTH: 100
+  artifacts:
+    reports:
+      junit: results.xml
+
+#
+# Verify that the merge request has the allow-collaboration checkbox ticked
+#
+check-merge-request:
+  extends:
+    - .fdo.ci-fairy
+  stage: deploy
+  script:
+    - ci-fairy check-merge-request --require-allow-collaboration --junit-xml=results.xml
+  artifacts:
+    when: on_failure
+    reports:
+      junit: results.xml
+  allow_failure: true
+
+
+#
+# Build a container with the given tag and the packages pre-installed.
+# This only happens if when the tag changes, otherwise the existing image is
+# re-used.
+#
+container-prep:
+  extends:
+    - .fdo.container-build@arch
+  stage: prep
+  variables:
+    GIT_STRATEGY: none
+
+
+#
+# The autotools build, runs on the image built above.
+#
+autotools:
+  extends:
+    - .fdo.distribution-image@arch
+  stage: build
+  script:
+    - autoreconf -vif
+    - mkdir _builddir
+    - pushd _builddir > /dev/null
+    - ../configure $CONFIGURE_OPTIONS
+    - make
+    - make check
+    - make distcheck
+    - mv xkbcomp-*.tar.gz ..
+    - popd > /dev/null
+  artifacts:
+    paths:
+      - xkbcomp-*.tar.gz
+
+
+#
+# The meson build, runs on the image built above.
+#
+.meson_build:
+  extends:
+    - .fdo.distribution-image@arch
+  stage: build
+  script:
+    - CC="${CC}" meson setup _builddir --prefix="$PWD/_install" -Dwarning_level=3
+    - meson compile -C _builddir
+    - meson test -C _builddir
+    - meson install -C _builddir
+
+# Run meson build with different compilers
+meson:
+  extends:
+    - .meson_build
+  parallel:
+    matrix:
+      - CC: ["gcc", "clang"]
+
+meson from tarball:
+  extends:
+    - .fdo.distribution-image@arch
+  stage: test
+  script:
+    - mkdir -p _tarball_build
+    - tar xf xkbcomp-*.tar.gz -C _tarball_build
+    - cd _tarball_build/xkbcomp-*
+    - meson setup _builddir
+    - meson compile -C _builddir
+    - meson test -C _builddir
+  needs:
+    - autotools
+
+compare meson and autotools:
+  extends:
+    - .fdo.distribution-image@arch
+  stage: test
+  script:
+    - mkdir -p $PWD/_meson_inst $PWD/_autotools_inst
+    # Meson build
+    # the prefix ends up in the pkgconfig files, so we use a symlink
+    # to use the same --prefix for meson and autotools
+    - ln -sf $PWD/_meson_inst $PWD/_inst
+    - export XKB_CONFIG_ROOT=$PWD/_inst/share/X11/xkb
+    - CFLAGS="-O2 -fno-strict-aliasing"
+      meson setup builddir --prefix=$PWD/_inst --buildtype=plain
+                           -Dxkb-config-root=$XKB_CONFIG_ROOT
+    - meson compile -C builddir -v
+    - meson install -C builddir
+
+    # Autotools build
+    - rm $PWD/_inst
+    - ln -sf $PWD/_autotools_inst $PWD/_inst
+    - ./autogen.sh --prefix=$PWD/_inst CFLAGS="-O2 -D_FILE_OFFSET_BITS=64"
+    - make V=1 && make install
+
+    # Get rid of expected differences between the two
+    - sed -i -e "s:\${datadir}/X11/xkb:$XKB_CONFIG_ROOT:"
+      _autotools_inst/lib/pkgconfig/xkbcomp.pc
+
+    # Compare both
+    - find $PWD/_meson_inst $PWD/_autotools_inst
+      -exec touch -h -r $PWD/_meson_inst/ {} \+
+    - diffoscope --text-color=always _autotools_inst _meson_inst
+
+check versions are in sync:
+  extends:
+    - .fdo.distribution-image@arch
+  stage: test
+  script:
+    - autoreconf -ivf
+    - ./configure $CONFIGURE_OPTIONS --version
+      | head -n 1
+      | sed -e 's/xkbcomp configure //'
+      > autotools.version
+    - meson introspect meson.build --projectinfo
+      | jq -r '.version'
+      > meson.version
+    - diff -u autotools.version meson.version ||
+      (echo "ERROR - autotools and meson versions not in sync" && false)

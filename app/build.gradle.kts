@@ -14,38 +14,57 @@ android {
         targetSdk = 28
         versionCode = 69
         versionName = "1.1.9Debug"
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        vectorDrawables { useSupportLibrary = true }
-        ndk { abiFilters += "arm64-v8a" }
+        vectorDrawables {
+            useSupportLibrary = true
+        }
+        ndk {
+            abiFilters += "arm64-v8a"
+        }
     }
 
     buildTypes {
         release {
             isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    buildFeatures { compose = true }
-    packaging {
-        jniLibs { useLegacyPackaging = true }
-        resources { excludes += "/META-INF/{AL2.0,LGPL2.1}" }
+    buildFeatures {
+        compose = true
     }
-    androidResources { noCompress += listOf("tar") }
+    packaging {
+        jniLibs {
+            useLegacyPackaging = true
+        }
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
+    
+    androidResources {
+        noCompress += listOf("tar")
+    }
 }
 
+// Force use of ARM64 binaries for AAPT2 in Proot environment
 configurations.all {
     resolutionStrategy.eachDependency {
         if (requested.group == "com.android.tools.build" && requested.name == "aapt2") {
-            useTarget("com.android.tools.build:aapt2:${requested.version}:linux-aarch64")
+            useTarget("com.android.tools.build:aapt2:${'$'}{requested.version}:linux-aarch64")
         }
     }
 }
 
 dependencies {
+
     implementation(project(":terminal-view"))
     implementation(project(":x11-lorie"))
     implementation(libs.androidx.core.ktx)
