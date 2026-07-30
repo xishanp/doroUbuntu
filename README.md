@@ -45,25 +45,45 @@ doro-gpu-run glxinfo -B
 - LibreOffice
 - GIMP
 - Thunar
+
 ## 界面预览
 
-### 离线部署流程
+### 1. 应用首页
 
-| 首页 | 文件授权 | 系统部署 | 创建用户 | 部署完成 |
-|---|---|---|---|---|
-| ![首页](assets/screenshots/01-home.jpg) | ![授权](assets/screenshots/02-permission.jpg) | ![部署](assets/screenshots/03-deploying.jpg) | ![用户](assets/screenshots/04-user.jpg) | ![完成](assets/screenshots/05-finished.jpg) |
+![应用首页](assets/screenshots/01-home.jpg)
 
-### Ubuntu运行效果
+### 2. 文件授权
 
-| 内置终端 | XFCE桌面 | Turnip与Zink |
-|---|---|---|
-| ![终端](assets/screenshots/06-terminal.jpg) | ![桌面](assets/screenshots/07-desktop.jpg) | ![GPU](assets/screenshots/08-gpu.jpg) |
+![文件授权](assets/screenshots/02-permission.jpg)
+
+### 3. 系统部署
+
+![系统部署](assets/screenshots/03-deploying.jpg)
+
+### 4. 创建用户
+
+![创建用户](assets/screenshots/04-user.jpg)
+
+### 5. 部署完成
+
+![部署完成](assets/screenshots/05-finished.jpg)
+
+### 6. 内置终端
+
+![内置终端](assets/screenshots/06-terminal.jpg)
+
+### 7. XFCE 桌面
+
+![XFCE 桌面](assets/screenshots/07-desktop.jpg)
+
+### 8. Turnip 与 Zink 验证
+
+![Turnip 与 Zink](assets/screenshots/08-gpu.jpg)
 
 ## 安装方法
 
-
 1. 至少预留 10 GB 空间。
-2. 安装目录内的 APK。
+2. 安装发布页提供的 APK。
 3. 打开应用并启动初始化。
 4. 等待离线任务全部完成。
 5. 按提示进入 XFCE 桌面。
@@ -82,7 +102,6 @@ Firefox 保持软件视频解码。本版本不含实验性 MediaCodec 硬解桥
 - `SHA256SUMS.txt`：校验值
 - `RELEASE_1.1.9Debug_ZH.md`：中文说明
 - `RELEASE_1.1.9Debug_EN.md`：英文说明
-- `source/`：项目源码
 
 ## 许可证
 
