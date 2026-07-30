@@ -20,8 +20,6 @@ doroUbuntu 是安卓离线 Ubuntu 桌面环境，集成 Ubuntu 24.04、XFCE、Te
 - PulseAudio 声音桥
 - Turnip 与 Zink 图形栈
 - fastfetch 终端欢迎页
-- 桌面默认横屏
-- 启动画面保留 2.5 秒
 
 ## GPU 方案
 
