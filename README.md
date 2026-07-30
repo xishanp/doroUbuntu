@@ -52,33 +52,33 @@ doro-gpu-run glxinfo -B
 
 ![应用首页](assets/screenshots/01-home.jpg)
 
-### 2. 文件授权
+### 2. 获取文件权限
 
-![文件授权](assets/screenshots/02-permission.jpg)
+![获取文件权限](assets/screenshots/02-permission.jpg)
 
-### 3. 系统部署
+### 3. 创建 Linux 用户
 
-![系统部署](assets/screenshots/03-deploying.jpg)
+![创建 Linux 用户](assets/screenshots/04-user.jpg)
 
-### 4. 创建用户
+### 4. 正在部署系统
 
-![创建用户](assets/screenshots/04-user.jpg)
+![正在部署系统](assets/screenshots/03-deploying.jpg)
 
-### 5. 部署完成
+### 5. Ubuntu 部署完成
 
-![部署完成](assets/screenshots/05-finished.jpg)
+![Ubuntu 部署完成](assets/screenshots/05-finished.jpg)
 
-### 6. 内置终端
+### 6. 内置终端与系统信息
 
-![内置终端](assets/screenshots/06-terminal.jpg)
+![内置终端与系统信息](assets/screenshots/06-terminal.jpg)
 
-### 7. XFCE 桌面
+### 7. XFCE 桌面与 Zink GPU 验证
 
-![XFCE 桌面](assets/screenshots/07-desktop.jpg)
+![XFCE 桌面与 Zink GPU 验证](assets/screenshots/07-desktop.jpg)
 
-### 8. Turnip 与 Zink 验证
+### 8. Turnip 与 Zink 命令验证
 
-![Turnip 与 Zink](assets/screenshots/08-gpu.jpg)
+![Turnip 与 Zink 命令验证](assets/screenshots/08-gpu.jpg)
 
 ## 安装方法
 
