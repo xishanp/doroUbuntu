@@ -1,93 +1,313 @@
-# doroUbuntu
+# LinuxHub
 
-[English](README_EN.md) | 简体中文
+[English](#english) | [简体中文](#简体中文)
 
-doroUbuntu 是安卓离线 Ubuntu 桌面环境，集成 Ubuntu 24.04、XFCE、Termux:X11 与 PulseAudio。
+[架构 / Architecture](ARCHITECTURE.md) · [贡献 / Contributing](CONTRIBUTING.md) · [安全 / Security](SECURITY.md) · [致谢 / Acknowledgements](ACKNOWLEDGEMENTS.md) · [更新记录 / Changelog](CHANGELOG.md) · [GPL-3.0](LICENSE)
 
-![doroUbuntu XFCE 桌面](assets/screenshots/03-deploying.jpg)
+---
 
-## 当前版本
+## 简体中文
 
-- 版本：`1.1.9Debug`
-- APK：`doroUbuntu-1.1.9Debug.apk`
-- 状态：已完成全新安装验收
+LinuxHub 是一款面向 Android ARM64 设备的 Linux 桌面运行环境。
 
-## 主要特性
+它将 Ubuntu、KDE Plasma、Wayland 与 Android 原生显示能力整合在同一个应用中，提供从系统部署、终端操作到图形桌面的完整体验。
 
-- Ubuntu 24.04 离线初始化
-- XFCE 桌面环境
-- 内嵌 Termux:X11
-- PulseAudio 声音桥
-- Turnip 与 Zink 图形栈
-- fastfetch 终端欢迎页
+### 核心特色
 
-## GPU 方案
+- 内置 Ubuntu 26.04 ARM64 运行环境
+- 集成 KDE Plasma 6 桌面
+- 使用 Wayland 原生图形架构
+- 支持高通 Adreno GPU 图形加速
+- 支持 Freedreno、Turnip 与 KGSL
+- 支持 VirGL 兼容后端
+- 避免 LLVM 软件渲染伪加速
+- 自动探测并选择可用 GPU 后端
+- 支持跟随设备刷新率输出
+- 提供 16:9 桌面显示区域
+- 支持横屏沉浸式桌面
 
-桌面壳使用软件渲染。应用入口通过 `/usr/local/bin/doro-gpu-run` 使用 Zink。Turnip 与 Mesa 保持不变，不全局强制 Zink，避免桌面黑屏。
+### 图形与显示
 
-```bash
-doro-gpu-run glxinfo -B
+LinuxHub 使用定制的 Anland 显示链路连接 Android 与 Linux 桌面。
+
+图形帧通过 DMA-BUF 在 Linux 合成器与 Android Surface 之间传递，减少不必要的图像复制，并保持流畅的桌面响应。
+
+高通设备可使用以下加速链路：
+
+```text
+KDE Plasma / KWin
+        ↓
+Wayland + Anland Backend
+        ↓
+Freedreno / Turnip / KGSL
+        ↓
+DMA-BUF
+        ↓
+Android Surface
 ```
 
-已验证 Zink Vulkan、Turnip Adreno 740 与硬件加速。
+主要能力包括：
 
-## 桌面入口
+- Qualcomm KGSL 原生设备支持
+- Freedreno OpenGL 驱动支持
+- Turnip Vulkan 驱动支持
+- XWayland 应用兼容
+- DMA-BUF 多缓冲显示
+- GPU 渲染栅栏同步
+- 动态分辨率同步
+- 动态刷新率传递
+- Android Surface 生命周期管理
 
-以下六个入口支持缺失 `Exec` 自动恢复，并使用 GPU 包装器：
+### 桌面交互
 
-- Firefox
-- 星火应用商店
-- VLC
-- LibreOffice
-- GIMP
-- Thunar
+LinuxHub 针对无鼠标的移动设备进行了触控适配：
 
-## 部署流程
+- 单指滑动移动鼠标
+- 单指轻点执行左键
+- 长按松开执行右键
+- 长按后滑动拖拽窗口
+- 双指滑动模拟滚轮
+- 双指轻点执行右键
+- 支持外接鼠标与键盘
+- 支持 Android 软键盘
+- 支持中文组合输入与候选提交
+- 支持退格、Delete、Tab、Esc 和方向键
 
-**应用首页**
+桌面右侧提供常驻快捷工具栏，可快速调用软键盘及常用按键。
 
-![应用首页](assets/screenshots/08-gpu.jpg)
+### Linux 运行环境
 
-**获取文件权限**
+- 使用 PRoot 启动 ARM64 Linux 用户空间
+- 无需修改 Android 系统分区
+- 自动部署 RootFS
+- 自动创建 Linux 用户
+- 自动配置 sudo
+- 自动生成中文 UTF-8 环境
+- 自动配置终端环境
+- 支持多终端会话
+- 支持文件管理器与开发工具
+- 支持 `/sdcard` 文件访问
+- 支持 PulseAudio 音频链路
+- 支持 Android 电量信息映射
 
-![获取文件权限](assets/screenshots/06-terminal.jpg)
+### 终端体验
 
-**创建 Linux 用户**
+- 内置 Termux Terminal Emulator 核心
+- 支持真彩色终端
+- 使用等宽字体
+- 支持触控唤起软键盘
+- 支持中文输入
+- 支持复制与粘贴
+- 支持多标签会话
+- 支持字体缩放
+- 内置 Fastfetch 环境信息展示
 
-![创建 Linux 用户](assets/screenshots/04-user.jpg)
+### 桌面组件
 
-**正在部署系统**
+默认桌面环境包含：
 
-![正在部署系统](assets/screenshots/07-desktop.jpg)
+- KDE Plasma 6
+- KWin Wayland
+- Dolphin 文件管理器
+- Konsole 终端
+- Kate 编辑器
+- XWayland 兼容层
+- PulseAudio
 
-**Ubuntu 部署完成**
+浏览器及其他第三方应用由用户按需安装。
 
-![Ubuntu 部署完成](assets/screenshots/05-finished.jpg)
+### 开发环境
 
-**内置终端与系统信息**
+LinuxHub 可作为移动端 Linux 开发环境使用，支持按需安装：
 
-![内置终端与系统信息](assets/screenshots/02-permission.jpg)
+- Git
+- Python
+- Node.js
+- GCC
+- CMake
+- Java
+- Rust
+- Go
+- Jupyter
 
-## 安装方法
+### 系统要求
 
-1. 至少预留 10 GB 空间。
-2. 安装发布页提供的 APK。
-3. 打开应用并启动初始化。
-4. 等待离线任务全部完成。
-5. 按提示进入 XFCE 桌面。
+- Android ARM64 设备
+- 推荐 Android 10 或更高版本
+- 建议预留充足存储空间
+- 高通 Adreno 设备可获得完整 KGSL 加速体验
+- 其他设备可使用兼容图形后端
 
-部署期间不要清理后台，也不要强制关闭应用。
+### 使用说明
 
-## 兼容性与限制
+1. 安装 LinuxHub APK。
+2. 首次启动时创建 Linux 用户。
+3. 等待 Ubuntu 环境部署完成。
+4. 进入终端或打开 KDE 桌面。
+5. 根据需要安装浏览器及其他 Linux 应用。
 
-当前已验证 Qualcomm Adreno 740。其他 GPU 和系统尚未完整验证。
+### 项目说明
 
-Firefox 保持软件视频解码。本版本不含实验性 MediaCodec 硬解桥。
+LinuxHub 的基础框架来源于 UP 主 **iPupil**。
 
-## 下载与校验
+本项目在该框架基础上完成了 Android 应用整合、Ubuntu 环境部署、KDE Plasma 桌面适配、Anland 显示链路、GPU 加速策略、触控交互、中文输入、终端体验及兼容性优化。
 
-APK 请从 GitHub Releases 下载。校验值见 `SHA256SUMS.txt`。
+感谢 iPupil 对原始框架的分享与贡献。
 
-## 许可证
+---
 
-发布前请确认代码、主题、图标、驱动和预装软件的授权条款。
+## English
+
+LinuxHub is a Linux desktop runtime environment designed for Android ARM64 devices.
+
+It integrates Ubuntu, KDE Plasma, Wayland, and Android's native display stack into one application, providing a complete experience from system deployment and terminal access to a full graphical desktop.
+
+### Highlights
+
+- Built-in Ubuntu 26.04 ARM64 environment
+- Integrated KDE Plasma 6 desktop
+- Native Wayland-based graphics architecture
+- Qualcomm Adreno GPU acceleration
+- Freedreno, Turnip, and KGSL support
+- VirGL compatibility backend
+- Protection against unintended LLVM software-rendering fallback
+- Automatic GPU backend detection and selection
+- Device refresh-rate integration
+- 16:9 desktop viewport
+- Immersive landscape desktop mode
+
+### Graphics and Display
+
+LinuxHub uses a customized Anland display pipeline to connect the Linux desktop with Android.
+
+Frames are transferred between the Linux compositor and Android Surface through DMA-BUF, reducing unnecessary image copies and maintaining responsive desktop rendering.
+
+On supported Qualcomm devices, the graphics pipeline is:
+
+```text
+KDE Plasma / KWin
+        ↓
+Wayland + Anland Backend
+        ↓
+Freedreno / Turnip / KGSL
+        ↓
+DMA-BUF
+        ↓
+Android Surface
+```
+
+Graphics capabilities include:
+
+- Native Qualcomm KGSL device support
+- Freedreno OpenGL support
+- Turnip Vulkan support
+- XWayland application compatibility
+- Multi-buffer DMA-BUF presentation
+- GPU render-fence synchronization
+- Dynamic resolution synchronization
+- Refresh-rate propagation
+- Android Surface lifecycle integration
+
+### Desktop Interaction
+
+LinuxHub includes touch controls designed for mobile devices without a mouse:
+
+- One-finger movement for cursor control
+- Single tap for left click
+- Long press and release for right click
+- Long press and move for window dragging
+- Two-finger scrolling
+- Two-finger tap for right click
+- External mouse and keyboard support
+- Android soft-keyboard support
+- Chinese composition and candidate input
+- Backspace, Delete, Tab, Esc, and arrow-key support
+
+A persistent shortcut toolbar is available on the right side of the desktop for quick access to the soft keyboard and common keys.
+
+### Linux Runtime
+
+- ARM64 Linux userspace powered by PRoot
+- No Android system partition modification required
+- Automatic RootFS deployment
+- Automatic Linux user creation
+- Automatic sudo configuration
+- Chinese UTF-8 locale setup
+- Automatic terminal environment setup
+- Multiple terminal sessions
+- File manager and development tools
+- `/sdcard` storage access
+- PulseAudio integration
+- Android battery information mapping
+
+### Terminal Experience
+
+- Built on the Termux Terminal Emulator core
+- True-color terminal support
+- Monospace font rendering
+- Touch-to-open soft keyboard
+- Chinese text input
+- Copy and paste support
+- Multi-tab sessions
+- Font scaling
+- Built-in Fastfetch system overview
+
+### Desktop Components
+
+The default desktop environment includes:
+
+- KDE Plasma 6
+- KWin Wayland
+- Dolphin file manager
+- Konsole terminal
+- Kate text editor
+- XWayland compatibility layer
+- PulseAudio
+
+Web browsers and other third-party applications can be installed by users as needed.
+
+### Development Environment
+
+LinuxHub can also be used as a mobile Linux development environment. Optional tools include:
+
+- Git
+- Python
+- Node.js
+- GCC
+- CMake
+- Java
+- Rust
+- Go
+- Jupyter
+
+### Requirements
+
+- Android ARM64 device
+- Android 10 or newer recommended
+- Sufficient free storage space
+- Qualcomm Adreno devices are recommended for the complete KGSL acceleration experience
+- Other devices may use a compatible graphics backend
+
+### Getting Started
+
+1. Install the LinuxHub APK.
+2. Create a Linux user during the first launch.
+3. Wait for the Ubuntu environment to finish deployment.
+4. Open the terminal or launch the KDE desktop.
+5. Install a browser and other Linux applications as needed.
+
+### Credits
+
+The foundational framework used by LinuxHub originates from content creator **iPupil**.
+
+LinuxHub extends that foundation with Android application integration, Ubuntu deployment, KDE Plasma adaptation, the Anland display pipeline, GPU acceleration policies, touch interaction, Chinese input, terminal integration, and compatibility improvements.
+
+Special thanks to iPupil for sharing and contributing the original framework.
+
+---
+
+## License and Third-Party Components
+
+LinuxHub integrates or works with multiple open-source projects. Their respective licenses and copyrights remain with their original authors, including Ubuntu, KDE, Wayland, Mesa, Termux, PRoot, and related components.
+
+Before redistribution, please review the licenses of all bundled binaries, libraries, assets, and RootFS content.

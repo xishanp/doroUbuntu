@@ -1,0 +1,17 @@
+LinuxHub
+
+Licensed under the GNU General Public License version 3.
+See LICENSE for the complete terms.
+
+The foundational framework used by LinuxHub originates from iPupil.
+LinuxHub contains subsequent integration and development for Android, Ubuntu,
+KDE Plasma, Anland, GPU acceleration, input, audio, and terminal workflows.
+
+LinuxHub incorporates, distributes, or interoperates with third-party
+open-source software. Copyright and license terms for those components remain
+with their respective authors and projects. Relevant projects include Android,
+Ubuntu, KDE, Wayland, Mesa, PRoot, Termux, PulseAudio, Fastfetch, Kotlin,
+Gradle, and Jetpack Compose.
+
+Redistributors must preserve applicable copyright notices, provide required
+source code, and comply with every bundled component's license.
